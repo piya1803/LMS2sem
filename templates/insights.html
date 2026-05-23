@@ -21,6 +21,30 @@
     </div>
 </div>
 
+<div class="card">
+    <h3>Python Learning Videos</h3>
+    <p class="planner-intro">Kick off smart learning with these popular Python lessons.</p>
+    <div class="video-grid">
+        <div class="video-card featured-video">
+            <iframe src="https://www.youtube.com/embed/{{ python_videos[0].embed_id }}" title="{{ python_videos[0].title }}" allowfullscreen loading="lazy"></iframe>
+            <div class="video-card-body">
+                <strong>{{ python_videos[0].title }}</strong>
+                <p>{{ python_videos[0].channel }}</p>
+                <a href="{{ python_videos[0].url }}" target="_blank" rel="noreferrer" class="inline-link">Open lesson</a>
+            </div>
+        </div>
+        <div class="video-list">
+            {% for video in python_videos[1:] %}
+            <div class="video-card">
+                <strong>{{ video.title }}</strong>
+                <p>{{ video.channel }}</p>
+                <a href="{{ video.url }}" target="_blank" rel="noreferrer" class="inline-link">Watch →</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
 {% if priority_subject %}
 <div class="card priority-card">
     <h3>Today's Priority</h3>

@@ -668,6 +668,47 @@ table tr:hover td {
     border: 1px solid var(--border);
 }
 
+.video-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 1.4fr) minmax(220px, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.video-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.featured-video iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    border: 0;
+}
+
+.video-card-body p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.video-list {
+    display: grid;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .video-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .insight-icon {
     font-size: 1.5rem;
     line-height: 1;

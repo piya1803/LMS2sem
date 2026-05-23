@@ -11,6 +11,33 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = "smartlearn-secret-change-in-production"
 
+PYTHON_VIDEO_RECOMMENDATIONS = [
+    {
+        "title": "Python Full Course - Beginner to Advanced",
+        "channel": "freeCodeCamp.org",
+        "url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+        "embed_id": "rfscVS0vtbw",
+    },
+    {
+        "title": "Automate the Boring Stuff with Python",
+        "channel": "Al Sweigart",
+        "url": "https://www.youtube.com/watch?v=1F_OgqRuSdI",
+        "embed_id": "1F_OgqRuSdI",
+    },
+    {
+        "title": "Python Tutorial for Absolute Beginners",
+        "channel": "Programming with Mosh",
+        "url": "https://www.youtube.com/watch?v=_uQrJ0TkZlc",
+        "embed_id": "_uQrJ0TkZlc",
+    },
+    {
+        "title": "Python OOP Tutorial - Object Oriented Programming",
+        "channel": "Corey Schafer",
+        "url": "https://www.youtube.com/watch?v=JeznW_7DlB0",
+        "embed_id": "JeznW_7DlB0",
+    },
+]
+
 
 def get_db():
     conn = sqlite3.connect("database.db")
@@ -547,6 +574,7 @@ def get_smartlearn_context(conn, user_id):
     base["activity_timeline"] = get_activity_timeline(conn, user_id)
     base["pending_total"] = conn.execute("SELECT COUNT(*) AS c FROM study_records WHERE student_id=? AND completed=0",
                                            (user_id,)).fetchone()["c"]
+    base["python_videos"] = PYTHON_VIDEO_RECOMMENDATIONS
     base["subject_summary"] = [{"subject": p["subject"], "total": p["total"], "done": p["done"],
         "pending": p["pending"], "marks_pct": p["marks_pct"]} for p in base["subject_profiles"]]
     return base
@@ -819,7 +847,8 @@ def insights():
         readiness_scores=ctx["readiness_scores"], revision_queue=ctx["revision_queue"],
         daily_goal=ctx["daily_goal"], goal=goal, notes_rows=notes_rows, subjects=ctx["subjects"],
         smartlearn_score=ctx["smartlearn_score"], learning_loop=ctx["learning_loop"],
-        activity_timeline=ctx["activity_timeline"], subject_profiles=ctx["subject_profiles"], page="insights")
+        activity_timeline=ctx["activity_timeline"], subject_profiles=ctx["subject_profiles"],
+        python_videos=ctx["python_videos"], page="insights")
 
 
 @app.route("/marks", methods=["GET", "POST"])
