@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SmartLearn{% endblock %}
+{% block content %}
+<h1>Welcome, {{ name }}</h1>
+
+<div class="cards">
+    <div class="card score-card">
+        <h3>SmartLearn Score</h3>
+        <p class="big">{{ smartlearn_score }}/100</p>
+        <a href="{{ url_for('insights') }}" class="inline-link">Details →</a>
+    </div>
+    <div class="card goal-card">
+        <h3>Daily Goal</h3>
+        <p class="big">{{ daily_goal['done_today'] }}/{{ daily_goal['target_topics'] }}</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:{{ daily_goal['percent'] }}%"></div></div>
+    </div>
+    <div class="card">
+        <h3>Progress</h3>
+        <p class="big">{{ progress }}%</p>
+        <p>{{ completed_topics }}/{{ total_topics }} topics</p>
+    </div>
+    <div class="card">
+        <h3>Pending</h3>
+        <p class="big">{{ pending_total }}</p>
+        <a href="{{ url_for('tasks') }}" class="inline-link">Tasks →</a>
+    </div>
+    <div class="card">
+        <h3>Streak</h3>
+        <p class="big">{{ streak }}d</p>
+    </div>
+    <div class="card">
+        <h3>Marks Avg</h3>
+        <p class="big">{{ marks_avg }}%</p>
+        <a href="{{ url_for('marks') }}" class="inline-link">Marks →</a>
+    </div>
+</div>
+
+{% if priority_subject %}
+<div class="card priority-card">
+    <h3>Today's Priority</h3>
+    <p>Study <strong>{{ priority_subject['subject'] }}</strong> first ({{ priority_subject['pending'] }} pending)</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Learning Loop</h3>
+    <div class="loop-flow compact">
+        {% for step in learning_loop %}
+        <a href="{{ url_for(step['route']) }}" class="loop-step loop-{{ step['status'] }}">{{ step['icon'] }} {{ step['label'] }}</a>
+        {% if not loop.last %} → {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% if insights %}
+<div class="card">
+    <h3>Smart Tips</h3>
+    {% for tip in insights[:2] %}
+    <div class="insight-item"><span class="insight-icon">{{ tip['icon'] }}</span><strong>{{ tip['title'] }}</strong> — {{ tip['message'] }}</div>
+    {% endfor %}
+    <a href="{{ url_for('insights') }}" class="inline-link">All insights →</a>
+</div>
+{% endif %}
+
+{% if planner_data %}
+<div class="card">
+    <h3>Planner Today</h3>
+    <p>{{ planner_data.get('today_topics',1) }} topics · {{ planner_data['study_time'] }}h · {{ planner_data['days_left'] }}d left</p>
+    <a href="{{ url_for('planner') }}" class="inline-link">Planner →</a>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Weekly Activity</h3>
+    <div class="activity-chart">
+        {% for day in activity_week %}
+        <div class="activity-col">
+            <div class="activity-bar" style="height:{{ day['height'] }}%"></div>
+            <span class="activity-count">{{ day['count'] }}</span>
+            <span class="activity-label">{{ day['label'] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>Recent Study</h3>
+    <table>
+        <tr><th>Subject</th><th>Topic</th><th>Status</th></tr>
+        {% for row in records %}
+        <tr><td>{{ row['subject'] }}</td><td>{{ row['topic'] }}</td><td>{{ 'Done' if row['completed'] else 'Pending' }}</td></tr>
+        {% else %}
+        <tr><td colspan="3"><a href="{{ url_for('tracker') }}">Add topics</a></td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

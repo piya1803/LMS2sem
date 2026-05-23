@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}SmartLearn{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-wrap">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="dashboard">
+    <aside class="sidebar">
+        <h2 class="brand">Smart<span>Learn</span></h2>
+        <a href="{{ url_for('dashboard') }}" class="{% if page=='dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('insights') }}" class="{% if page=='insights' %}active{% endif %}">Smart Insights</a>
+        <a href="{{ url_for('tracker') }}" class="{% if page=='tracker' %}active{% endif %}">Study Tracker</a>
+        <a href="{{ url_for('tasks') }}" class="{% if page=='tasks' %}active{% endif %}">Tasks</a>
+        <a href="{{ url_for('planner') }}" class="{% if page=='planner' %}active{% endif %}">Time Planner</a>
+        <a href="{{ url_for('marks') }}" class="{% if page=='marks' %}active{% endif %}">Marks</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </aside>
+    <main class="main-content">{% block content %}{% endblock %}</main>
+</div>
+</body>
+</html>

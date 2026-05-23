@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Tasks — SmartLearn{% endblock %}
+{% block content %}
+<h1>Tasks</h1>
+<p class="planner-intro">{{ pending_total }} pending · <a href="{{ url_for('insights') }}" class="inline-link">Revision queue</a></p>
+{% if revision_queue %}
+<div class="card alert-card"><p>{{ revision_queue|length }} topic(s) need revision (7+ days). <a href="{{ url_for('insights') }}" class="inline-link">View in Insights →</a></p></div>
+{% endif %}
+<div class="card">
+<table>
+<tr><th>Subject</th><th>Date</th><th>Topic</th><th>Priority</th><th>Done</th></tr>
+{% for row in records %}
+<tr>
+<td>{{ row['subject'] }}</td><td>{{ row['study_date'] }}</td><td>{{ row['topic'] }}</td>
+<td><span class="prio-tag prio-{{ (row['priority'] or 'Medium')|lower }}">{{ row['priority'] or 'Medium' }}</span></td>
+<td><form method="POST" class="inline-form"><input type="hidden" name="record_id" value="{{ row['id'] }}"><input type="checkbox" name="completed" {% if row['completed'] %}checked{% endif %} onchange="this.form.submit()"></form></td>
+</tr>
+{% else %}
+<tr><td colspan="5">No tasks — <a href="{{ url_for('tracker') }}">add topics</a></td></tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

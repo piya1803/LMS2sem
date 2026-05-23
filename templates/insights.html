@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Smart Insights — SmartLearn{% endblock %}
+{% block content %}
+<h1>Smart Insights</h1>
+<p class="planner-intro">Recommendations, goals, revision, notes, and readiness — connected to Tracker, Tasks, Planner, and Marks.</p>
+
+<div class="cards">
+    <div class="card score-card">
+        <h3>SmartLearn Score</h3>
+        <p class="big">{{ smartlearn_score }}/100</p>
+    </div>
+    <div class="card goal-card">
+        <h3>Daily Goal</h3>
+        <p class="big">{{ daily_goal['done_today'] }}/{{ daily_goal['target_topics'] }}</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:{{ daily_goal['percent'] }}%"></div></div>
+    </div>
+    <div class="card">
+        <h3>Velocity</h3>
+        <p class="big">{{ velocity }}</p>
+        <p>topics / 7 days</p>
+    </div>
+</div>
+
+{% if priority_subject %}
+<div class="card priority-card">
+    <h3>Today's Priority</h3>
+    <p class="big">{{ priority_subject['subject'] }}</p>
+    <p>Health {{ priority_subject['score'] }}/100 · {{ priority_subject['pending'] }} pending</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Learning Loop</h3>
+    <div class="loop-flow compact">
+        {% for step in learning_loop %}
+        <a href="{{ url_for(step['route']) }}" class="loop-step loop-{{ step['status'] }}">
+            <span class="loop-icon">{{ step['icon'] }}</span>
+            <strong>{{ step['label'] }}</strong>
+        </a>
+        {% if not loop.last %}<span class="loop-arrow">→</span>{% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>Set Daily Goal</h3>
+    <form method="POST" class="planner-form">
+        <input type="hidden" name="form_type" value="goals">
+        <div class="form-grid">
+            <div><label>Topics/day</label><input type="number" name="daily_topics" min="1" value="{{ goal['daily_topics'] }}" required></div>
+            <div><label>Hours/day</label><input type="number" name="daily_hours" min="0.5" step="0.5" value="{{ goal['daily_hours'] }}" required></div>
+        </div>
+        <button type="submit">Save Goal</button>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Smart Recommendations</h3>
+    <div class="insight-list">
+        {% for tip in insights %}
+        <div class="insight-item insight-{{ tip['type'] }}">
+            <span class="insight-icon">{{ tip['icon'] }}</span>
+            <div class="insight-body">
+                <strong>{{ tip['title'] }}</strong>
+                <p>{{ tip['message'] }}</p>
+                {% if tip.get('action') %}<a href="{{ url_for(tip['action']) }}" class="inline-link">{{ tip['action_label'] }} →</a>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>Spaced Revision Queue</h3>
+    {% if revision_queue %}
+    <table>
+        <tr><th>Subject</th><th>Topic</th><th>Days ago</th><th>Action</th></tr>
+        {% for r in revision_queue %}
+        <tr>
+            <td>{{ r['subject'] }}</td><td>{{ r['topic'] }}</td><td>{{ r['days_ago'] }}</td>
+            <td><form method="POST" action="{{ url_for('tasks') }}" class="inline-form">
+                <input type="hidden" name="action" value="revise"><input type="hidden" name="record_id" value="{{ r['id'] }}">
+                <button type="submit" class="btn-small">Revise today</button></form></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}<p class="ok">No revision due yet.</p>{% endif %}
+</div>
+
+<div class="card">
+    <h3>7-Day Activity</h3>
+    <div class="activity-chart">
+        {% for day in activity_week %}
+        <div class="activity-col">
+            <div class="activity-bar" style="height:{{ day['height'] }}%"></div>
+            <span class="activity-count">{{ day['count'] }}</span>
+            <span class="activity-label">{{ day['label'] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if subject_health %}
+<div class="card">
+    <h3>Subject Health</h3>
+    <table>
+        <tr><th>Subject</th><th>Score</th><th>Status</th><th>Tasks</th><th>Marks</th></tr>
+        {% for s in subject_health %}
+        <tr>
+            <td>{{ s['subject'] }}</td><td>{{ s['score'] }}</td>
+            <td><span class="health-badge health-{{ s['status']|lower|replace(' ', '-') }}">{{ s['status'] }}</span></td>
+            <td>{{ s['completion'] }}%</td>
+            <td>{% if s['marks_pct'] %}{{ s['marks_pct'] }}%{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if readiness_scores %}
+<div class="card">
+    <h3>Exam Readiness</h3>
+    <table>
+        <tr><th>Subject</th><th>Readiness</th><th>Status</th></tr>
+        {% for s in readiness_scores %}
+        <tr>
+            <td>{{ s['subject'] }}</td><td>{{ s['readiness'] }}%</td>
+            <td><span class="ready-badge ready-{{ s['label']|lower|replace(' ', '-') }}">{{ s['label'] }}</span></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Subject Notes</h3>
+    <form method="POST">
+        <input type="hidden" name="form_type" value="notes">
+        <input type="text" name="subject" list="subject-list" placeholder="Subject" required>
+        <datalist id="subject-list">{% for s in subjects %}<option value="{{ s }}">{% endfor %}</datalist>
+        <textarea name="note_text" rows="3" placeholder="Formulas, tips, doubts..." required></textarea>
+        <button type="submit">Save Notes</button>
+    </form>
+    {% if notes_rows %}
+    <div class="notes-list">
+        {% for n in notes_rows %}
+        <div class="note-item"><strong>{{ n['subject'] }}</strong><p>{{ n['note_text'] }}</p></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+{% if activity_timeline %}
+<div class="card">
+    <h3>Activity Timeline</h3>
+    <ul class="timeline-list">
+        {% for ev in activity_timeline %}
+        <li><span>{{ ev['icon'] }}</span><div><strong>{{ ev['detail'] }}</strong><small>{{ ev['time'] }}</small></div></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

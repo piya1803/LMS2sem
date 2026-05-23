@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Study Tracker — SmartLearn{% endblock %}
+{% block content %}
+<h1>Study Tracker</h1>
+<p class="planner-intro">Topics flow to <a href="{{ url_for('tasks') }}" class="inline-link">Tasks</a> and <a href="{{ url_for('insights') }}" class="inline-link">Smart Insights</a>.</p>
+<div class="card">
+<form method="POST">
+<label>Subject</label>
+<input type="text" name="subject" list="subject-list" required value="{{ prefill_subject or '' }}">
+<datalist id="subject-list">{% for s in subjects %}<option value="{{ s }}">{% endfor %}</datalist>
+<label>Date</label>
+<input type="date" name="date" required>
+<div class="topic-box"><input type="text" name="topic1" placeholder="Topic 1"><select name="priority1" class="priority-select"><option>Easy</option><option selected>Medium</option><option>Hard</option></select><label><input type="checkbox" name="check1"> Done</label></div>
+<div class="topic-box"><input type="text" name="topic2" placeholder="Topic 2"><select name="priority2" class="priority-select"><option>Easy</option><option selected>Medium</option><option>Hard</option></select><label><input type="checkbox" name="check2"> Done</label></div>
+<div class="topic-box"><input type="text" name="topic3" placeholder="Topic 3"><select name="priority3" class="priority-select"><option>Easy</option><option selected>Medium</option><option>Hard</option></select><label><input type="checkbox" name="check3"> Done</label></div>
+<div class="topic-box"><input type="text" name="topic4" placeholder="Topic 4"><select name="priority4" class="priority-select"><option>Easy</option><option selected>Medium</option><option>Hard</option></select><label><input type="checkbox" name="check4"> Done</label></div>
+<button type="submit">Save Topics</button>
+</form>
+</div>
+{% endblock %}

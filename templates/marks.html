@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Marks — SmartLearn{% endblock %}
+{% block content %}
+<h1>Semester Marks</h1>
+<p class="planner-intro">Updates <a href="{{ url_for('dashboard') }}" class="inline-link">Dashboard</a> avg & <a href="{{ url_for('insights') }}" class="inline-link">readiness</a>.</p>
+<div class="cards">
+    <div class="card"><h3>Average</h3><p class="big">{{ avg_pct }}%</p></div>
+    <div class="card"><h3>SGPA</h3><p class="big">{{ sgpa }}</p></div>
+</div>
+<div class="card">
+<form method="POST">
+<label>Semester</label><select name="semester">{% for i in range(1,9) %}<option>Semester {{ i }}</option>{% endfor %}</select>
+<label>Subject</label><input type="text" name="subject" list="subject-list" required><datalist id="subject-list">{% for s in subjects %}<option value="{{ s }}">{% endfor %}</datalist>
+<label>Obtained</label><input type="number" name="marks" min="0" required>
+<label>Total</label><input type="number" name="total_marks" min="1" required>
+<button type="submit">Save</button>
+</form>
+</div>
+<div class="card">
+<table>
+<tr><th>Semester</th><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th></tr>
+{% for row in marks_data %}
+<tr>
+<td>{{ row['semester'] }}</td><td>{{ row['subject'] }}</td><td>{{ row['marks'] }}/{{ row['total_marks'] }}</td>
+<td>{{ row['percentage'] }}%</td><td><span class="grade-tag">{{ row['grade'] }}</span></td>
+</tr>
+{% else %}<tr><td colspan="5">No marks yet.</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}
